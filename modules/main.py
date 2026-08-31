@@ -58,7 +58,7 @@ def qsvm(dataset, config, kernel_modules):
     day_and_dataset_and_hour_str = f"{day_str}_{dataset_name}_{hour_str}"
 
     run_folder_name = os.path.join(primary_folder_str, day_str, day_and_dataset_str, day_and_dataset_and_hour_str)
-    os.makedirs(run_folder_name, exist_ok = True)
+    os.makedirs(run_folder_name, exist_ok=True)
 
     # TRAINING.
 
@@ -71,7 +71,7 @@ def qsvm(dataset, config, kernel_modules):
         day_and_dataset_and_hour_and_encoding_str = f"{day_str}_{dataset_name}_{hour_str}_{kernel_name}"
         
         folder_name = os.path.join(run_folder_name, day_and_dataset_and_hour_and_encoding_str) 
-        os.makedirs(folder_name, exist_ok = True) 
+        os.makedirs(folder_name, exist_ok=True) 
 
         # TRAINING.
 
@@ -79,33 +79,33 @@ def qsvm(dataset, config, kernel_modules):
          best_model_kernel_hyperparameters, 
          best_model_SVM_hyperparameters, 
          best_model_K_train,
-         best_model_K_test) = train_model(dataset_name = dataset_name,
-                                          X_train = X_train,
-                                          y_train = y_train,
-                                          X_test = X_test,
-                                          number_features = number_features,
-                                          max_qubits = max_qubits,
-                                          quantum_device = quantum_device,
-                                          kernel_module = kernel_module,
-                                          kernel_name = kernel_name,
-                                          folder_name = folder_name)
+         best_model_K_test) = train_model(dataset_name=dataset_name,
+                                          X_train=X_train,
+                                          y_train=y_train,
+                                          X_test=X_test,
+                                          number_features=number_features,
+                                          max_qubits=max_qubits,
+                                          quantum_device=quantum_device,
+                                          kernel_module=kernel_module,
+                                          kernel_name=kernel_name,
+                                          folder_name=folder_name)
         
         # CALCULATING THE PREDICTIONS ON THE TEST SET.
 
         y_pred = best_model.predict(best_model_K_test)
 
         accuracy = accuracy_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred, average = 'weighted')
+        f1 = f1_score(y_test, y_pred, average='weighted')
 
         # EVALUATING THE BEST MODEL.
 
-        evaluate_model(dataset_name = dataset_name,
-                       y_train = y_train,
-                       y_test = y_test,
-                       y_pred = y_pred,
-                       kernel_name = kernel_name,
-                       folder_name = folder_name, 
-                       best_model_K_train = best_model_K_train)
+        evaluate_model(dataset_name=dataset_name,
+                       y_train=y_train,
+                       y_test=y_test,
+                       y_pred=y_pred,
+                       kernel_name=kernel_name,
+                       folder_name=folder_name, 
+                       best_model_K_train=best_model_K_train)
 
         # CALCULATING THE METRICS.
 
@@ -126,7 +126,7 @@ def qsvm(dataset, config, kernel_modules):
 
         # EXTRACTING DETAILED METRICS FOR THE EXCEL.
 
-        report_dict = classification_report(y_test, y_pred, output_dict = True, zero_division = 0)
+        report_dict = classification_report(y_test, y_pred, output_dict=True, zero_division=0)
 
         # UPDATING GLOBAL RESULTS.
 
@@ -151,7 +151,7 @@ def qsvm(dataset, config, kernel_modules):
             "class_1_support": int(report_dict.get('1', {}).get('support', 0))
         })
 
-        # SAVING THE PARTIAL RESULTS OF THIS KERNEL IN EXCEL (code made by Gemini).
+        # SAVING THE PARTIAL RESULTS OF THIS KERNEL IN EXCEL.
 
         partial_excel_path = os.path.join(run_folder_name, f"partial_results_{dataset_name}.xlsx")
         df_partial = pd.DataFrame(global_results)
@@ -171,7 +171,7 @@ def qsvm(dataset, config, kernel_modules):
     print(f"\nFINAL RESULTS FOR {dataset_name.upper()}:\n")
     print(df_final.to_string(index=False))
 
-    # SAVING THE FINAL SUMMARY (code made by Gemini).
+    # SAVING THE FINAL SUMMARY.
 
     final_excel_path = os.path.join(run_folder_name, f"final_summary_{dataset_name}.xlsx")
     

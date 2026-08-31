@@ -30,10 +30,10 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
     @qml.qnode(actual_device)
     def quantum_circuit(sample_1, sample_2): 
 
-        qml.IQPEmbedding(features = sample_1, wires=range(number_qubits), n_repeats = number_repeats, pattern = pattern)
-        qml.adjoint(qml.IQPEmbedding)(features = sample_2, wires = range(number_qubits), n_repeats = number_repeats, pattern = pattern) 
+        qml.IQPEmbedding(features=sample_1, wires=range(number_qubits), n_repeats=number_repeats, pattern=pattern)
+        qml.adjoint(qml.IQPEmbedding)(features=sample_2, wires=range(number_qubits), n_repeats=number_repeats, pattern=pattern) 
 
-        return qml.expval(qml.Projector(np.zeros(number_qubits), wires = range(number_qubits)))
+        return qml.expval(qml.Projector(np.zeros(number_qubits), wires=range(number_qubits)))
 
     # If the dataset is the same, we don't have to calculate every element of the kernel matrix.
 
@@ -45,13 +45,13 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # the sample feature values between -1 and 1 using MinMaxScaler. We avoid mapping the sample features between 0 and pi;
         # since this encoding involves multiplying the angles, using values outside the [-1, 1] range could introduce periodicity issues.
 
-        scaler = MinMaxScaler(feature_range = (-0.95, 0.95))
+        scaler = MinMaxScaler(feature_range=(-0.95, 0.95))
 
         X_dataset_scaled = scaler.fit_transform(X_dataset_1)
 
         # CALCULATING THE KERNEL (the Gram matrix).
 
-        kernel = qml.kernels.square_kernel_matrix(X_dataset_scaled, quantum_circuit, assume_normalized_kernel = True)
+        kernel = qml.kernels.square_kernel_matrix(X_dataset_scaled, quantum_circuit, assume_normalized_kernel=True)
 
         # RESULTS.
 
@@ -65,7 +65,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # and only apply the transformation (transform) on dataset_2. However, since dataset_2 might have more extreme original 
         # values than dataset_1 and end up "out of bounds", we apply clipping using np.clip.
 
-        scaler = MinMaxScaler(feature_range = (-0.95, 0.95))
+        scaler = MinMaxScaler(feature_range=(-0.95, 0.95))
 
         X_dataset_1_scaled = scaler.fit_transform(X_dataset_1)
         X_dataset_2_scaled = scaler.transform(X_dataset_2)

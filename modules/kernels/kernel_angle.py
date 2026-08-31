@@ -26,10 +26,10 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device):
     @qml.qnode(actual_device)
     def quantum_circuit(sample_1, sample_2): 
 
-        qml.AngleEmbedding(sample_1, wires = range(number_qubits), rotation = "Y") 
-        qml.adjoint(qml.AngleEmbedding)(sample_2, wires = range(number_qubits), rotation = "Y") 
+        qml.AngleEmbedding(sample_1, wires=range(number_qubits), rotation="Y") 
+        qml.adjoint(qml.AngleEmbedding)(sample_2, wires=range(number_qubits), rotation="Y") 
         
-        return qml.expval(qml.Projector(np.zeros(number_qubits), wires = range(number_qubits)))
+        return qml.expval(qml.Projector(np.zeros(number_qubits), wires=range(number_qubits)))
 
     # If the dataset is the same, we don't have to calculate every element of the kernel matrix.
 
@@ -40,13 +40,13 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device):
         # To adapt the dataset for angle encoding, we need to make the encoding bijective: we must map 
         # the sample feature values between 0 and pi using MinMaxScaler.
 
-        scaler = MinMaxScaler(feature_range = (0.05*np.pi, 0.95*np.pi))
+        scaler = MinMaxScaler(feature_range=(0.05*np.pi, 0.95*np.pi))
 
         X_dataset_scaled = scaler.fit_transform(X_dataset_1)
 
         # CALCULATING THE KERNEL (the Gram matrix).
     
-        kernel = qml.kernels.square_kernel_matrix(X_dataset_scaled, quantum_circuit, assume_normalized_kernel = True)
+        kernel = qml.kernels.square_kernel_matrix(X_dataset_scaled, quantum_circuit, assume_normalized_kernel=True)
 
         # RESULTS.
 
@@ -60,7 +60,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device):
         # and only apply the transformation (transform) on dataset_2. However, since dataset_2 might have more extreme original 
         # values than dataset_1 and end up "out of bounds", we apply clipping using np.clip.
 
-        scaler = MinMaxScaler(feature_range = (0.05*np.pi, 0.95*np.pi))
+        scaler = MinMaxScaler(feature_range=(0.05*np.pi, 0.95*np.pi))
 
         X_dataset_1_scaled = scaler.fit_transform(X_dataset_1)
         X_dataset_2_scaled = scaler.transform(X_dataset_2)

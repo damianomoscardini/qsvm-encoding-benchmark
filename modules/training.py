@@ -31,10 +31,10 @@ def train_model(dataset_name,
 
     CV_fold_number = 5
 
-    class_count = np.unique(y_train, return_counts = True)[1]
+    class_count = np.unique(y_train, return_counts=True)[1]
     effective_fold_number = min(CV_fold_number, int(class_count.min()))
 
-    CV_validator = StratifiedKFold(n_splits = effective_fold_number, shuffle = True, random_state = 42)
+    CV_validator = StratifiedKFold(n_splits=effective_fold_number, shuffle=True, random_state=42)
     fold_indices = list(CV_validator.split(X_train, y_train)) 
 
     # EXTRACTING THE HYPERPARAMETERS OF THE KERNEL.
@@ -109,10 +109,10 @@ def train_model(dataset_name,
                 
                 for K_train_fold, K_val_fold, y_train_f, y_val_f in kernel_folds:
 
-                    fold_model = SVC(kernel = "precomputed", **SVM_hyperparameters_combination)
+                    fold_model = SVC(kernel="precomputed", **SVM_hyperparameters_combination)
                     fold_model.fit(K_train_fold, y_train_f)
                     val_fold_predictions = fold_model.predict(K_val_fold)
-                    fold_scores.append(f1_score(y_val_f, val_fold_predictions, average = "macro"))
+                    fold_scores.append(f1_score(y_val_f, val_fold_predictions, average="macro"))
 
                 average_val_score = float(np.mean(fold_scores)) 
                 std_val_score = float(np.std(fold_scores))    
@@ -124,8 +124,7 @@ def train_model(dataset_name,
                                   "SVM_hyperparameters": SVM_hyperparameters_combination,
                                   "F1_score_macro(%)": round(average_val_score * 100, 2), 
                                   "F1_score_std_CV(%)": round(std_val_score * 100, 2), 
-                                  "kernel_calculation_time(s)": round(kernel_total_time),
-                                  }
+                                  "kernel_calculation_time(s)": round(kernel_total_time)}
                 
                 training_results_history.append(current_result)
 
@@ -155,7 +154,7 @@ def train_model(dataset_name,
                                                        quantum_device,
                                                        **best_model_kernel_hyperparameters).T
 
-    best_model = SVC(kernel = "precomputed", **best_model_SVM_hyperparameters)
+    best_model = SVC(kernel="precomputed", **best_model_SVM_hyperparameters)
     best_model.fit(best_model_K_train, y_train)
 
     # SAVING THE RESULTS ON A EXCEL FILE (code made by Gemini).
@@ -175,6 +174,7 @@ def train_model(dataset_name,
         from openpyxl.styles import PatternFill
 
         for column_index, column_name in enumerate(df.columns):
+
             max_length = max(
                 df[column_name].astype(str).map(len).max(),
                 len(column_name)
@@ -187,6 +187,7 @@ def train_model(dataset_name,
         yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
 
         for col in range(1, len(df.columns) + 1):
+            
             sheet.cell(row=excel_row, column=col).fill = yellow_fill
 
     # RESULTS.

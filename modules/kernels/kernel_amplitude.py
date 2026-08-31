@@ -26,8 +26,8 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device):
     @qml.qnode(actual_device)
     def quantum_circuit(sample_1, sample_2): 
 
-        qml.AmplitudeEmbedding(features = sample_1, wires = range(number_qubits), normalize = True, pad_with = 0.)
-        qml.adjoint(qml.AmplitudeEmbedding)(features = sample_2, wires = range(number_qubits), normalize = True, pad_with = 0.) 
+        qml.AmplitudeEmbedding(features=sample_1, wires=range(number_qubits), normalize=True, pad_with=0.)
+        qml.adjoint(qml.AmplitudeEmbedding)(features=sample_2, wires=range(number_qubits), normalize=True, pad_with=0.) 
 
         return qml.expval(qml.Projector(np.zeros(number_qubits), wires = range(number_qubits)))
 
@@ -40,11 +40,11 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device):
         # To adapt the dataset for amplitude encoding, we must ensure that the vectors containing the 
         # features of the samples we pass to the encoding function have unit norm.
 
-        X_dataset_normalized = normalize(X_dataset_1, norm = "l2")
+        X_dataset_normalized = normalize(X_dataset_1, norm="l2")
     
         # CALCULATING THE KERNEL (the Gram matrix).
         
-        kernel = qml.kernels.square_kernel_matrix(X_dataset_normalized, quantum_circuit, assume_normalized_kernel = True)
+        kernel = qml.kernels.square_kernel_matrix(X_dataset_normalized, quantum_circuit, assume_normalized_kernel=True)
 
         # RESULTS.
 
@@ -54,8 +54,8 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device):
 
         # ADAPTING THE DATASET TO THE ENCODING.
 
-        X_dataset_1_normalized = normalize(X_dataset_1, norm = "l2")
-        X_dataset_2_normalized = normalize(X_dataset_2, norm = "l2")
+        X_dataset_1_normalized = normalize(X_dataset_1, norm="l2")
+        X_dataset_2_normalized = normalize(X_dataset_2, norm="l2")
 
         # CALCULATING THE KERNEL (the Gram matrix).
         

@@ -38,21 +38,21 @@ def prepare_dataset(dataset, number_samples, number_features, fraction_train):
     # If number_samples is equal to the number of the samples of the dataset, we do nothing. Otherwise, we must undersample the original dataset.
     
     if number_samples < X_dataset.shape[0]:
-        X_dataset, _, y_dataset, _ = train_test_split(
-            X_dataset, 
-            y_dataset, 
-            train_size = number_samples, 
-            stratify = y_dataset, 
-            random_state = 42)
+
+        X_dataset, _, y_dataset, _ = train_test_split(X_dataset, 
+                                                      y_dataset, 
+                                                      train_size=number_samples, 
+                                                      stratify=y_dataset, 
+                                                      random_state=42)
+    
 
     # SPLITTING OF THE DATASET.
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X_dataset, 
-        y_dataset, 
-        train_size = fraction_train, 
-        stratify = y_dataset, 
-        random_state = 42)
+    X_train, X_test, y_train, y_test = train_test_split(X_dataset, 
+                                                          y_dataset, 
+                                                          train_size=fraction_train, 
+                                                          stratify=y_dataset,
+                                                          random_state=42)
     
     # CHECK FEATURES.
 

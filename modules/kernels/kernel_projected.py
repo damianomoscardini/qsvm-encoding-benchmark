@@ -32,7 +32,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
     @qml.qnode(actual_device)
     def quantum_circuit(sample):
         for _ in range(layer_number):
-            qml.AngleEmbedding(sample, wires = range(number_qubits), rotation = "Y") 
+            qml.AngleEmbedding(sample, wires=range(number_qubits), rotation="Y") 
             entangling_block(range(number_qubits)) 
 
         observables = []
@@ -49,16 +49,17 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # To adapt the dataset for angle encoding, we need to make the encoding bijective: we must map 
         # the sample feature values between 0 and pi using MinMaxScaler.
 
-        scaler = MinMaxScaler(feature_range = (0.05*np.pi, 0.95*np.pi))
+        scaler = MinMaxScaler(feature_range=(0.05*np.pi, 0.95*np.pi))
 
         X_dataset_scaled = scaler.fit_transform(X_dataset_1)
 
         # CALCULATING THE KERNEL (the Gram matrix).
 
         phi = np.array([quantum_circuit(x) for x in X_dataset_scaled])
-        effective_gamma = gamma / number_features 
+        
+        effective_gamma=gamma / (3 * number_features)
 
-        kernel = rbf_kernel(phi, Y = None, gamma = effective_gamma) 
+        kernel = rbf_kernel(phi, Y=None, gamma=effective_gamma) 
 
         # RESULTS.
 
@@ -72,7 +73,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # and only apply the transformation (transform) on dataset_2. However, since dataset_2 might have more extreme original 
         # values than dataset_1 and end up "out of bounds", we apply clipping using np.clip.
 
-        scaler = MinMaxScaler(feature_range = (0.05*np.pi, 0.95*np.pi))
+        scaler = MinMaxScaler(feature_range=(0.05*np.pi, 0.95*np.pi))
 
         X_dataset_1_scaled = scaler.fit_transform(X_dataset_1)
         X_dataset_2_scaled = scaler.transform(X_dataset_2)
@@ -89,9 +90,9 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         phi_1 = np.array([quantum_circuit(x) for x in X_dataset_1_scaled])
         phi_2 = np.array([quantum_circuit(x) for x in X_dataset_2_clipped])
 
-        effective_gamma = gamma / number_features 
+        effective_gamma = gamma / (3 * number_features)
 
-        kernel = rbf_kernel(phi_1, phi_2, gamma = effective_gamma)
+        kernel = rbf_kernel(phi_1, phi_2, gamma=effective_gamma)
 
         # RESULTS.
 

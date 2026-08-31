@@ -9,7 +9,7 @@ kernel_name = "classic_RBF_kernel"
 
 def get_kernel_hyperparameters(number_features, max_qubits):
 
-    return {"gamma": [0.01, 0.1, 1.0, 5.0, 10.0]}
+    return {"gamma": np.logspace(-3, 2, 20).tolist()}
 
 # ------------------------------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
 
         # CALCULATING THE KERNEL (the Gram matrix).
 
-        kernel = rbf_kernel(X_dataset_1, Y = None, gamma = effective_gamma)
+        kernel = rbf_kernel(X_dataset_1, Y=None, gamma=effective_gamma)
 
         return kernel
     
@@ -36,7 +36,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
 
         # CALCULATING THE KERNEL (the Gram matrix).
 
-        kernel = rbf_kernel(X_dataset_1, X_dataset_2, gamma = effective_gamma)
+        kernel = rbf_kernel(X_dataset_1, X_dataset_2, gamma=effective_gamma)
 
         # RESULTS.
 

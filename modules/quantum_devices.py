@@ -6,7 +6,7 @@ import pennylane as qml
 
 def lightning_qubit_device(number_qubits):
 
-    return qml.device("lightning.qubit", wires = number_qubits)
+    return qml.device("lightning.qubit", wires=number_qubits)
 
 # ------------------------------------------------------------------------------------------------
 
@@ -21,16 +21,16 @@ def allocate_GPU_device(number_qubits):
 
             print(f"Allocated {number_qubits} qubits. Backend: GPU.")
             
-            return qml.device("lightning.gpu", wires = number_qubits)
+            return qml.device("lightning.gpu", wires=number_qubits)
         
         else:
 
             print(f"Allocated {number_qubits} qubits. Backend: CPU.")
 
-            return qml.device("lightning.qubit", wires = number_qubits)
+            return qml.device("lightning.qubit", wires=number_qubits)
         
     except qml.DeviceError:
 
         print("GPU not available. Fallback on CPU.")
 
-        return qml.device("lightning.qubit", wires = number_qubits)
+        return qml.device("lightning.qubit", wires=number_qubits)

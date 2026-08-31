@@ -48,8 +48,11 @@ def calculate_geometric_coefficient(K_classic, K_quantum, lambda_reg=1e-6):
     # Calculating the inverse of the quantum kernel.
 
     try:
+
         K_quantum_inverse = np.linalg.inv(K_quantum_regularized)
+
     except np.linalg.LinAlgError:
+        
         K_quantum_inverse = np.linalg.pinv(K_quantum_regularized)
         
     # Calculating the square root of the classic kernel.

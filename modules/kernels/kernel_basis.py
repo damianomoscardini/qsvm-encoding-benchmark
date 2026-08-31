@@ -24,9 +24,9 @@ def get_kernel_hyperparameters(number_features, max_qubits):
 
 def binary_conversion(X_dataset, tau):
     
-    max_value = (2**tau) - 1
+    max_value = (2 ** tau) - 1
     integer_data = np.round(X_dataset * max_value).astype(np.uint8)
-    matrix_8bit = np.unpackbits(integer_data[:, :, np.newaxis], axis = 2)
+    matrix_8bit = np.unpackbits(integer_data[:, :, np.newaxis], axis=2)
 
     return matrix_8bit[:, :, -tau:].reshape(X_dataset.shape[0], X_dataset.shape[1] * tau)
 
@@ -44,10 +44,10 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
     @qml.qnode(actual_device)
     def quantum_circuit(sample_1, sample_2): 
 
-        qml.BasisEmbedding(features = sample_1, wires = range(number_qubits)) 
-        qml.adjoint(qml.BasisEmbedding)(features = sample_2, wires = range(number_qubits)) 
+        qml.BasisEmbedding(features=sample_1, wires=range(number_qubits)) 
+        qml.adjoint(qml.BasisEmbedding)(features=sample_2, wires=range(number_qubits)) 
 
-        return qml.expval(qml.Projector(np.zeros(number_qubits), wires = range(number_qubits)))
+        return qml.expval(qml.Projector(np.zeros(number_qubits), wires=range(number_qubits)))
 
     # If the dataset is the same, we don't have to calculate every element of the kernel matrix.
 
@@ -58,7 +58,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # To adapt the dataset for angle encoding,  we must map the sample feature values between 0 and 1 using MinMaxScaler.
         # This is needed by the binary_conversion function, that only accepts values between 0 and 1.
     
-        scaler = MinMaxScaler(feature_range = (0.05, 0.95))
+        scaler = MinMaxScaler(feature_range=(0.05, 0.95))
 
         X_dataset_scaled = scaler.fit_transform(X_dataset_1)
 
@@ -66,7 +66,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
 
         # CALCULATING THE KERNEL (the Gram matrix).
     
-        kernel = qml.kernels.square_kernel_matrix(X_dataset_binary, quantum_circuit, assume_normalized_kernel = True)
+        kernel = qml.kernels.square_kernel_matrix(X_dataset_binary, quantum_circuit, assume_normalized_kernel=True)
 
         # RESULTS.
 
@@ -80,7 +80,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # and only apply the transformation (transform) on dataset_2. However, since dataset_2 might have more extreme original 
         # values than dataset_1 and end up "out of bounds", we apply clipping using np.clip.
 
-        scaler = MinMaxScaler(feature_range = (0.05, 0.95))
+        scaler = MinMaxScaler(feature_range=(0.05, 0.95))
 
         X_dataset_1_scaled = scaler.fit_transform(X_dataset_1)
         X_dataset_2_scaled = scaler.transform(X_dataset_2)
