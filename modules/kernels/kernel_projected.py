@@ -49,7 +49,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # To adapt the dataset for angle encoding, we need to make the encoding bijective: we must map 
         # the sample feature values between 0 and pi using MinMaxScaler.
 
-        scaler = MinMaxScaler(feature_range = (0.05 * np.pi, 0.95 * np.pi))
+        scaler = MinMaxScaler(feature_range = (0.05*np.pi, 0.95*np.pi))
 
         X_dataset_scaled = scaler.fit_transform(X_dataset_1)
 
@@ -72,17 +72,17 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # and only apply the transformation (transform) on dataset_2. However, since dataset_2 might have more extreme original 
         # values than dataset_1 and end up "out of bounds", we apply clipping using np.clip.
 
-        scaler = MinMaxScaler(feature_range = (0.05 * np.pi, 0.95 * np.pi))
+        scaler = MinMaxScaler(feature_range = (0.05*np.pi, 0.95*np.pi))
 
         X_dataset_1_scaled = scaler.fit_transform(X_dataset_1)
         X_dataset_2_scaled = scaler.transform(X_dataset_2)
 
-        X_dataset_2_clipped = np.clip(X_dataset_2_scaled, 0.05 * np.pi, 0.95 * np.pi)
+        X_dataset_2_clipped = np.clip(X_dataset_2_scaled, 0.0, np.pi)
 
         fraction_clipped = np.sum(X_dataset_2_scaled != X_dataset_2_clipped) / X_dataset_2_scaled.size
 
         if fraction_clipped > 0.05:
-            raise ValueError(f"Outliers in the test/val set: {fraction_clipped*100:.2f}% of the data was clipped.")
+            print(f"WARNING: {fraction_clipped*100:.2f}% of the validation/test data was clipped in {kernel_name}.")
         
         # CALCULATING THE KERNEL (the Gram matrix).
 

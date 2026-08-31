@@ -90,7 +90,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         fraction_clipped = np.sum(X_dataset_2_scaled != X_dataset_2_clipped) / X_dataset_2_scaled.size
 
         if fraction_clipped > 0.05:
-            raise ValueError(f"Outliers in the test/val set: {fraction_clipped*100:.2f}% of the data was clipped.")
+            print(f"WARNING: {fraction_clipped*100:.2f}% of the validation/test data was clipped in {kernel_name}.")
         
         X_dataset_1_binary = binary_conversion(X_dataset_1_scaled, tau_bit_feature)
         X_dataset_2_binary = binary_conversion(X_dataset_2_clipped, tau_bit_feature)

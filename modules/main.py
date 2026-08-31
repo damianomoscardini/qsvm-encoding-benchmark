@@ -15,6 +15,12 @@ from modules.metrics import calculate_kernel_target_alignment, calculate_geometr
 
 def qsvm(dataset, config, kernel_modules):
 
+    # INJECTION OF CLASSICAL RBF KERNEL IN KERNEL LIST
+
+    from modules.kernels import kernel_rbf
+    
+    kernel_modules = [kernel_rbf] + [k for k in kernel_modules if k.kernel_name != "classic_RBF_kernel"]
+
     # DEFINING GLOBAL VARIABLES.
 
     global_results = []
@@ -52,7 +58,7 @@ def qsvm(dataset, config, kernel_modules):
     day_and_dataset_and_hour_str = f"{day_str}_{dataset_name}_{hour_str}"
 
     run_folder_name = os.path.join(primary_folder_str, day_str, day_and_dataset_str, day_and_dataset_and_hour_str)
-    os.makedirs(run_folder_name, exist_ok = True) 
+    os.makedirs(run_folder_name, exist_ok = True)
 
     # TRAINING.
 
@@ -116,7 +122,7 @@ def qsvm(dataset, config, kernel_modules):
 
         else:
     
-            geometric_coefficient = f"{calculate_geometric_coefficient(K_classic_train_reference, best_model_K_train):.4f}"
+            geometric_coefficient = round(float(calculate_geometric_coefficient(K_classic_train_reference, best_model_K_train)), 4)
 
         # EXTRACTING DETAILED METRICS FOR THE EXCEL.
 
@@ -129,19 +135,19 @@ def qsvm(dataset, config, kernel_modules):
             "kernel_name": kernel_name,
             "kernel_hyperparameters": str(best_model_kernel_hyperparameters),
             "SVM_hyperparameters": str(best_model_SVM_hyperparameters),
-            "KTA": f"{current_KTA:.4f}",
+            "KTA": round(current_KTA, 4),
             "geometric_coefficient": geometric_coefficient,
-            "accuracy": f"{accuracy:.4f}",
-            "F1 score": f"{f1:.4f}",
-            "macro_precision": f"{report_dict['macro avg']['precision']:.4f}",
-            "macro_recall": f"{report_dict['macro avg']['recall']:.4f}",
-            "class_0_precision": f"{report_dict.get('0', {}).get('precision', 0.0):.4f}",
-            "class_0_recall": f"{report_dict.get('0', {}).get('recall', 0.0):.4f}",
-            "class_0_f1_score": f"{report_dict.get('0', {}).get('f1-score', 0.0):.4f}",
+            "accuracy": round(accuracy, 4),
+            "F1 score": round(f1, 4),
+            "macro_precision": round(report_dict['macro avg']['precision'], 4),
+            "macro_recall": round(report_dict['macro avg']['recall'], 4),
+            "class_0_precision": round(report_dict.get('0', {}).get('precision', 0.0), 4),
+            "class_0_recall": round(report_dict.get('0', {}).get('recall', 0.0), 4),
+            "class_0_f1_score": round(report_dict.get('0', {}).get('f1-score', 0.0), 4),
             "class_0_support": int(report_dict.get('0', {}).get('support', 0)),
-            "class_1_precision": f"{report_dict.get('1', {}).get('precision', 0.0):.4f}",
-            "class_1_recall": f"{report_dict.get('1', {}).get('recall', 0.0):.4f}",
-            "class_1_f1_score": f"{report_dict.get('1', {}).get('f1-score', 0.0):.4f}",
+            "class_1_precision": round(report_dict.get('1', {}).get('precision', 0.0), 4),
+            "class_1_recall": round(report_dict.get('1', {}).get('recall', 0.0), 4),
+            "class_1_f1_score": round(report_dict.get('1', {}).get('f1-score', 0.0), 4),
             "class_1_support": int(report_dict.get('1', {}).get('support', 0))
         })
 
@@ -181,7 +187,7 @@ def qsvm(dataset, config, kernel_modules):
             column_letter = get_column_letter(column_index + 1)
             sheet.column_dimensions[column_letter].width = max_length
 
-        best_index = df_final["F1 score"].astype(float).idxmax()
+        best_index = df_final["F1 score"].idxmax()
         excel_row = best_index + 2 
         yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
 

@@ -11,8 +11,6 @@ RUN pip install --no-cache-dir \
     numpy \
     scipy \
     matplotlib \
-    qiskit \
-    qiskit-aer \
     pennylane \
     jupyterlab \
     notebook \
