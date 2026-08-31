@@ -17,6 +17,8 @@ def get_kernel_hyperparameters(number_features, max_qubits):
 
 def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, gamma):
 
+    effective_gamma = gamma / number_features
+
     if X_dataset_1 is X_dataset_2 or np.array_equal(X_dataset_1, X_dataset_2):
 
         # ADAPTING THE DATA TO THE ENCODING.
@@ -26,9 +28,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
 
         # CALCULATING THE KERNEL (the Gram matrix).
 
-        kernel = rbf_kernel(X_dataset_1, Y = None, gamma = gamma)
-
-        # RESULTS.
+        kernel = rbf_kernel(X_dataset_1, Y = None, gamma = effective_gamma)
 
         return kernel
     
@@ -36,7 +36,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
 
         # CALCULATING THE KERNEL (the Gram matrix).
 
-        kernel = rbf_kernel(X_dataset_1, X_dataset_2, gamma = gamma)
+        kernel = rbf_kernel(X_dataset_1, X_dataset_2, gamma = effective_gamma)
 
         # RESULTS.
 

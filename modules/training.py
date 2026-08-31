@@ -56,9 +56,21 @@ def train_model(dataset_name,
     best_model_kernel_hyperparameters, best_model_SVM_hyperparameters = {}, None
     training_results_history = [] 
 
-    # CONFIGURING THE UPDATE BAR.
+    # CONFIGURING THE UPDATE BAR AND PRECOMPUTING PCA.
 
     total_combinations = len(kernel_hyperparameters_grid) * len(SVM_hyperparameters_grid)
+    
+    precomputed_folds = []
+    for train_fold_indices, val_fold_indices in fold_indices:
+        X_train_fold = X_train[train_fold_indices]
+        y_train_fold = y_train[train_fold_indices]
+        X_val_fold = X_train[val_fold_indices]
+        y_val_fold = y_train[val_fold_indices]
+
+        X_train_fold_PCA, X_val_fold_PCA = apply_PCA(X_train_fold, X_val_fold, number_features)
+        
+        precomputed_folds.append((X_train_fold_PCA, X_val_fold_PCA, y_train_fold, y_val_fold))
+
     with tqdm(total = total_combinations, desc = f"Training", bar_format = "{l_bar}{bar}| {n_fmt}/{total_fmt} (hyperparameters combinations)") as barra:
         
         # START OF THE CICLE ON ALL THE KERNEL HYPERPARAMETERS POSSIBLE COMBINATIONS. 
@@ -66,20 +78,11 @@ def train_model(dataset_name,
         for kernel_hyperparameters_combination in kernel_hyperparameters_grid:
 
             kernel_start_time = time.time()
-        
             kernel_folds = []
 
             # CALCULATING THE KERNEL (Cross Validation).
             
-            for train_fold_indices, val_fold_indices in fold_indices:
-
-                X_train_fold = X_train[train_fold_indices]
-                y_train_fold = y_train[train_fold_indices]
-
-                X_val_fold = X_train[val_fold_indices]
-                y_val_fold = y_train[val_fold_indices]
-
-                X_train_fold_PCA, X_val_fold_PCA = apply_PCA(X_train_fold, X_val_fold, number_features)
+            for X_train_fold_PCA, X_val_fold_PCA, y_train_fold, y_val_fold in precomputed_folds:
                 
                 K_train_fold = kernel_module.calculate_kernel(X_train_fold_PCA, 
                                                               X_train_fold_PCA,

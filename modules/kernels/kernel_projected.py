@@ -56,9 +56,9 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         # CALCULATING THE KERNEL (the Gram matrix).
 
         phi = np.array([quantum_circuit(x) for x in X_dataset_scaled])
-        gamma_effettivo = gamma / number_features 
+        effective_gamma = gamma / number_features 
 
-        kernel = rbf_kernel(phi, Y = None, gamma = gamma_effettivo) 
+        kernel = rbf_kernel(phi, Y = None, gamma = effective_gamma) 
 
         # RESULTS.
 
@@ -89,9 +89,9 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         phi_1 = np.array([quantum_circuit(x) for x in X_dataset_1_scaled])
         phi_2 = np.array([quantum_circuit(x) for x in X_dataset_2_clipped])
 
-        gamma_effettivo = gamma / number_features 
+        effective_gamma = gamma / number_features 
 
-        kernel = rbf_kernel(phi_1, phi_2, gamma = gamma_effettivo)
+        kernel = rbf_kernel(phi_1, phi_2, gamma = effective_gamma)
 
         # RESULTS.
 
