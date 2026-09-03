@@ -30,26 +30,26 @@ result logging, for an arbitrary list of datasets and encodings.
 
 ```
 encoding_benchmark.ipynb     Entry point notebook: defines the config, the datasets and
-                              the list of kernels, and runs the benchmark.
+                             the list of kernels, and runs the benchmark.
 
 modules/
   main.py                    qsvm(): orchestrates a full benchmark run for one dataset
-                              against a list of kernels.
+                             against a list of kernels.
   dataset_preparation.py     Undersampling, train/test split, PCA.
   training.py                Hyperparameter grid search + cross-validation, final refit
-                              of the best model.
+                             of the best model.
   diagnostics.py             Test-set evaluation report, confusion matrix and Gram matrix
-                              plots.
+                             plots.
   metrics.py                 Kernel-Target Alignment (KTA) and geometric coefficient.
   quantum_devices.py         Factory functions that build the PennyLane device used by
-                              every kernel.
+                             every kernel.
   kernels/
-    kernel_rbf.py             Classical RBF baseline (always included automatically).
-    kernel_amplitude.py       Amplitude encoding.
-    kernel_angle.py            Angle encoding.
-    kernel_basis.py            Basis encoding.
-    kernel_IQP.py               IQP encoding.
-    kernel_projected.py        Projected quantum kernel.
+    kernel_rbf.py            Classical RBF baseline (always included automatically).
+    kernel_amplitude.py      Amplitude encoding.
+    kernel_angle.py          Angle encoding.
+    kernel_basis.py          Basis encoding.
+    kernel_IQP.py            IQP encoding.
+    kernel_projected.py      Projected quantum kernel.
 
 report/                      The written report (results, comparison, discussion).
 run_results/                 Auto-generated output of each run (git-ignored).
