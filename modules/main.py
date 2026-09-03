@@ -41,7 +41,9 @@ def qsvm(dataset, config, kernel_modules):
 
     # PREPARING THE DATASET.
 
-    train_set, test_set = prepare_dataset(dataset_original_data, number_samples, number_features, fraction_train)
+    # The effective value for number_feautures is determined by the dataset_preparation module.
+
+    train_set, test_set, number_features = prepare_dataset(dataset_original_data, number_samples, number_features, fraction_train)
 
     X_train, y_train = train_set
     X_test, y_test = test_set
