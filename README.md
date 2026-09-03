@@ -25,6 +25,7 @@ result logging, for an arbitrary list of datasets and encodings.
 - [Simulation notes](#simulation-notes)
 - [Encodings implemented](#encodings-implemented)
 - [Output](#output)
+- [License](#license)
 
 ## Repository structure
 
@@ -232,3 +233,13 @@ run_results/<YYYYMMDD>/<YYYYMMDD>_<dataset>/<YYYYMMDD>_<dataset>_<HHMMSS>/
 
 For the interpretation of these results — which encodings performed best, on which datasets,
 and why — refer to [`report/`](report/).
+
+## License
+
+This repository carries two separate licenses:
+
+- **Code** (`modules/`, `encoding_benchmark.ipynb`) — [GNU GPLv3](LICENSE).
+- **Report** (everything under [`report/`](report/)) — [Creative Commons
+  Attribution-ShareAlike 4.0 International](report/LICENSE) (CC BY-SA 4.0). The report is a
+  student submission for a university exam: it hasn't been certified or peer-reviewed, and is
+  provided as-is, with no warranty and no liability accepted for how it's used or evaluated.

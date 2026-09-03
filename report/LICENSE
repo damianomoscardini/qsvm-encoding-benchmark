@@ -1,0 +1,35 @@
+Copyright (c) 2026 Damiano Moscardini, Davide Petillo
+
+This work (the report in this directory, including its Typst source and compiled PDF) is
+licensed under a Creative Commons Attribution-ShareAlike 4.0 International License
+(CC BY-SA 4.0).
+
+You are free to:
+  - Share   -- copy and redistribute the material in any medium or format
+  - Adapt   -- remix, transform, and build upon the material
+
+for any purpose, even commercially, under the following terms:
+
+  - Attribution -- You must give appropriate credit to the original authors,
+    provide a link to the license, and indicate if changes were made. You may do so
+    in any reasonable manner, but not in any way that suggests the authors endorse
+    you or your use.
+  - ShareAlike  -- If you remix, transform, or build upon the material, you must
+    distribute your contributions under the same license as the original.
+
+No additional restrictions -- you may not apply legal terms or technological
+measures that legally restrict others from doing anything the license permits.
+
+This work is a student project submitted for an exam (Quantum Machine Learning,
+University of Pisa). It has not been peer-reviewed or certified as correct by any
+third party, and it is provided "AS IS", without warranty of any kind, express or
+implied (see Section 5 of the full legal code below). The authors accept no
+liability for how this work is used, cited, or evaluated.
+
+This license applies only to the contents of this directory (the report). The
+rest of the repository (the code in modules/ and the notebook) is licensed
+separately under the GNU General Public License v3.0 -- see the LICENSE file at
+the root of the repository.
+
+Full legal code:        https://creativecommons.org/licenses/by-sa/4.0/legalcode
+Human-readable summary:  https://creativecommons.org/licenses/by-sa/4.0/
