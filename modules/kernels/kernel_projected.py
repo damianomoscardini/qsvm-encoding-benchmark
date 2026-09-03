@@ -55,7 +55,7 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
 
         # CALCULATING THE KERNEL (the Gram matrix).
 
-        phi = np.array([quantum_circuit(x) for x in X_dataset_scaled])
+        phi = np.column_stack(quantum_circuit(X_dataset_scaled))
         
         effective_gamma = gamma / (3 * number_features)
 
@@ -87,8 +87,9 @@ def calculate_kernel(X_dataset_1, X_dataset_2, number_features, quantum_device, 
         
         # CALCULATING THE KERNEL (the Gram matrix).
 
-        phi_1 = np.array([quantum_circuit(x) for x in X_dataset_1_scaled])
-        phi_2 = np.array([quantum_circuit(x) for x in X_dataset_2_clipped])
+        phi_1 = np.column_stack(quantum_circuit(X_dataset_1_scaled))
+        phi_2 = np.column_stack(quantum_circuit(X_dataset_2_clipped))
+
 
         effective_gamma = gamma / (3 * number_features)
 
