@@ -1,3 +1,27 @@
+qsvm-encoding-benchmark -- a benchmarking framework for quantum data-encoding
+strategies (QSVM kernels) against a classical RBF-kernel SVM baseline.
+
+Copyright (C) 2026  Damiano Moscardini, Davide Petillo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+This notice applies to the code in this repository (modules/ and
+encoding_benchmark.ipynb). The report in report/ is licensed separately
+under CC BY-SA 4.0 -- see report/LICENSE.
+
+------------------------------------------------------------------------
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
