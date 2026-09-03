@@ -20,7 +20,7 @@ def get_kernel_hyperparameters(number_features, max_qubits):
 
 # ------------------------------------------------------------------------------------------------
 
-# BINARY CONVERSION FUNCTION (made by Gemini).
+# BINARY CONVERSION FUNCTION.
 
 def binary_conversion(X_dataset, tau):
 
