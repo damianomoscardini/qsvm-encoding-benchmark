@@ -59,7 +59,7 @@ def prepare_dataset(dataset, number_samples, number_features, fraction_train):
     effective_number_features = min(number_features, X_dataset.shape[1])
 
     if effective_number_features < number_features:
-        print(f"NOTE: requested {number_features} features, but \"{X_dataset.shape[1]}\" is the maximum available. Using {effective_number_features}.")
+        print(f"\nNOTE: requested {number_features} features, but \"{X_dataset.shape[1]}\" is the maximum available. Using {effective_number_features}.\n")
 
     # RESULTS.
 

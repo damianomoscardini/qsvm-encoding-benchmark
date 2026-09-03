@@ -23,12 +23,14 @@ def get_kernel_hyperparameters(number_features, max_qubits):
 # BINARY CONVERSION FUNCTION (made by Gemini).
 
 def binary_conversion(X_dataset, tau):
-    
-    max_value = (2 ** tau) - 1
-    integer_data = np.round(X_dataset * max_value).astype(np.uint8)
-    matrix_8bit = np.unpackbits(integer_data[:, :, np.newaxis], axis=2)
 
-    return matrix_8bit[:, :, -tau:].reshape(X_dataset.shape[0], X_dataset.shape[1] * tau)
+    max_value = (2 ** tau) - 1
+    integer_data = np.round(X_dataset * max_value).astype(np.int64)
+
+    shifts = np.arange(tau - 1, -1, -1)
+    bits = ((integer_data[:, :, np.newaxis] >> shifts) & 1).astype(np.uint8)
+
+    return bits.reshape(X_dataset.shape[0], X_dataset.shape[1] * tau)
 
 # ------------------------------------------------------------------------------------------------
 
