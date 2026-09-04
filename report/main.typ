@@ -239,11 +239,11 @@ The two images provided per dataset (at $8$ qubits / $200$ samples) display the 
 On a problem that is linearly separable by design, any reasonable encoding is expected to perform well. This holds true for Angle and IQP at all scales, but crucially not for Amplitude, which remains stalled near random chance. The root cause is structural: Amplitude Encoding normalizes every sample, thereby discarding the absolute scale information of the vector—the exact information separating the classes in this setup. Furthermore, Basis Encoding deteriorates sharply as the scale increases ($0.925 arrow.r 0.333$): with higher bit-precision per feature (`tau_bit_feature`), the Hilbert space grows faster than the sample size (which remains unchanged from `4/200` to `8/200`) can support.
 
 #figure(
-  image("img/best_model_plots_Linear_angle.svg", width: 100%),
+  image("img/best_model_plots_Linear_angle.png", width: 100%),
   caption: [Linear, 8 features/200 samples, Angle Encoding, Acc $=0.900$ (best).]
 )
 #figure(
-  image("img/best_model_plots_Linear_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Linear_amplitude.png", width: 100%),
   caption: [Linear, 8 features/200 samples, Amplitude Encoding, Acc $=0.500$ (worst, chance level).]
 )
 
@@ -262,11 +262,11 @@ On a problem that is linearly separable by design, any reasonable encoding is ex
 Circles is the dataset where the comparison is least informative: three out of five encodings achieve F1 $=1.000$ at just 4 qubits. Given a test set of only roughly 40 samples with simple radial geometry, this points to problem saturation rather than strict equivalence among Angle, IQP, and Projected. The previous structural observations regarding Amplitude and Basis still apply here.
 
 #figure(
-  image("img/best_model_plots_Circles_angle.svg", width: 100%),
+  image("img/best_model_plots_Circles_angle.png", width: 100%),
   caption: [Circles, 8 features/200 samples, Angle Encoding, Acc $=1.000$ (best).]
 )
 #figure(
-  image("img/best_model_plots_Circles_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Circles_amplitude.png", width: 100%),
   caption: [Circles, 8 features/200 samples, Amplitude Encoding, Acc $=0.450$ (worst).]
 )
 
@@ -287,11 +287,11 @@ The Gram matrix for Angle displays a clear block structure (one for each class),
 The pattern is similar to Circles but slightly less saturated: Amplitude remains the clear loser, while the other four encodings are highly competitive and functionally equivalent (differences fall within 1-2 percentage points, well within the statistical noise threshold discussed earlier).
 
 #figure(
-  image("img/best_model_plots_Moons_angle.svg", width: 100%),
+  image("img/best_model_plots_Moons_angle.png", width: 100%),
   caption: [Moons, 8 features/200 samples, Angle Encoding, Acc $=0.975$ (best, tied with IQP and Projected).]
 )
 #figure(
-  image("img/best_model_plots_Moons_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Moons_amplitude.png", width: 100%),
   caption: [Moons, 8 features/200 samples, Amplitude Encoding, Acc $=0.450$ (worst).]
 )
 
@@ -312,11 +312,11 @@ Here, the block structure for Angle is even more pronounced.
 The dynamic shifts significantly here: no encoding achieves perfect separation at `4/200` or `8/200`, and Projected emerges as the clear winner across all scales, showing marked improvement when moving to `16/400` ($0.850 arrow.r 0.975$). Remarkably, although this dataset is explicitly designed to favor "rotational" encodings (Angle, IQP, Projected) via the $sin(x_1)cos(x_2)$ pattern, Projected leads by a wide margin, leaving Angle and IQP hovering around $0.6$-$0.7$.
 
 #figure(
-  image("img/best_model_plots_Quantum_Ad_Hoc_projected.svg", width: 100%),
+  image("img/best_model_plots_Quantum_Ad_Hoc_projected.png", width: 100%),
   caption: [Quantum_Ad_Hoc, 8 features/200 samples, Projected Quantum Kernel, Acc $=0.850$ (best).]
 )
 #figure(
-  image("img/best_model_plots_Quantum_Ad_Hoc_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Quantum_Ad_Hoc_amplitude.png", width: 100%),
   caption: [Quantum_Ad_Hoc, 8 features/200 samples, Amplitude Encoding, Acc $=0.400$ (worst).]
 )
 
@@ -337,11 +337,11 @@ It must be stated clearly before analyzing the numbers: practically no encoding 
 High_Dim_XOR is also the only dataset where performance degrades universally when scaling from 4 to 16 qubits. This aligns perfectly with the nature of the problem: generalized XOR requires capturing an $n$-order correlation (the sign of the product of all features), not merely pairwise relationships. As the feature count (and thus qubit count) increases, the space in which this correlation resides grows exponentially while the sample size remains comparatively small. This is the exact curse of dimensionality noted earlier regarding classical simulation, now observed from a learning perspective: even when simulation is tractable, the learning problem itself becomes overwhelmingly difficult. Not even IQP with an "all-to-all" pattern (which explicitly embeds pairwise correlations across all features) can compensate.
 
 #figure(
-  image("img/best_model_plots_High_Dim_XOR_amplitude.svg", width: 100%),
+  image("img/best_model_plots_High_Dim_XOR_amplitude.png", width: 100%),
   caption: [High_Dim_XOR, 8 features/200 samples, Amplitude Encoding, Acc $=0.550$ (the "best", but hovering near chance).]
 )
 #figure(
-  image("img/best_model_plots_High_Dim_XOR_iqp.svg", width: 100%),
+  image("img/best_model_plots_High_Dim_XOR_iqp.png", width: 100%),
   caption: [High_Dim_XOR, 8 features/200 samples, IQP Encoding ("all-to-all" pattern), Acc $=0.400$ (the worst).]
 )
 
@@ -362,11 +362,11 @@ Even the Gram matrix for the top performer (Amplitude) fails to reveal any recog
 On the real-world dataset, IQP and Projected perform strongest across all scales. Angle performs well but sits slightly behind both. Notably, Amplitude is the sole encoding whose performance improves significantly and monotonically with scaling ($0.567 arrow.r 0.673 arrow.r 0.794$). This is logically consistent: with more features (and thus more qubits, since Amplitude scales logarithmically with feature count), the scalar information lost during normalization becomes proportionally less detrimental to the whole.
 
 #figure(
-  image("img/best_model_plots_Breast_Cancer_projected.svg", width: 100%),
+  image("img/best_model_plots_Breast_Cancer_projected.png", width: 100%),
   caption: [Breast_Cancer, 8 features/200 samples, Projected Quantum Kernel, Acc $=0.975$ (best).]
 )
 #figure(
-  image("img/best_model_plots_Breast_Cancer_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Breast_Cancer_amplitude.png", width: 100%),
   caption: [Breast_Cancer, 8 features/200 samples, Amplitude Encoding, Acc $=0.675$ (worst).]
 )
 
