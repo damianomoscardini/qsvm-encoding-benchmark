@@ -1,5 +1,7 @@
 # QSVM Encoding Benchmark
 
+![Confusion matrix and Gram matrix for the Projected Quantum Kernel on Breast_Cancer](report/img/best_model_plots_Breast_Cancer_projected.png)
+
 A benchmarking framework for comparing quantum data-encoding strategies ("feature maps") in a
 Quantum Support Vector Machine (QSVM) setting, against a classical RBF-kernel SVM baseline.
 
