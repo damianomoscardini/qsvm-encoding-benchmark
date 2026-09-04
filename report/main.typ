@@ -85,9 +85,9 @@ To represent a valid amplitude distribution, the vector must have a unit norm: i
 
 Angle Encoding maps each feature to the rotation angle of a single-qubit gate (typically $R_y$), applied to a dedicated qubit for each feature:
 
-$ |phi(x)⟩ = plus.o_(i=1)^n R_y (x_i) |0⟩ $
+$ |phi(x)⟩ = times.o.big_(i=1)^n R_y (x_i) |0⟩ $
 
-Since rotation angles must remain within a limited range to prevent unwanted periodic behaviors, features are rescaled using `MinMaxScaler` into the $[0, pi]$ interval. Validation and test values, which might exceed the min/max observed during training, are subsequently clipped to stay within the original scale. This encoding requires a number of qubits equal to the number of features ($n$), making it linear in complexity but highly interpretable.
+Since rotation angles must remain within a limited range to prevent unwanted periodic behaviors, features are rescaled using `MinMaxScaler` into the $[0.05 pi, 0.95 pi]$ interval, slightly narrower than the full $[0, pi]$ range: this margin reduces how often validation/test features — rescaled with the same scaler fitted on the training set only — fall outside $[0, pi]$ and require clipping. Values that still fall outside are subsequently clipped back into $[0, pi]$. This encoding requires a number of qubits equal to the number of features ($n$), making it linear in complexity but highly interpretable.
 
 == Basis Encoding
 
@@ -95,7 +95,7 @@ Basis Encoding represents each feature as a classical bit string, mapped directl
 
 $ |phi(x)⟩ = |b_1 b_2 dots b_N ⟩, quad b_i in {0,1} $
 
-Each real feature is discretized into a $tau$-bit binary representation (parameter `tau_bit_feature`) via the auxiliary `binary_conversion` function. This is the only encoding considered that has a "native" and non-geometric quantum hyperparameter: increasing $tau$ increases the resolution with which each feature is represented, at the cost of requiring $n times tau$ qubits, a number that grows rapidly as the required precision increases.
+Before discretization, features are rescaled with `MinMaxScaler` into the $[0.05, 0.95]$ range (slightly narrower than $[0, 1]$, for the same margin reasons discussed for Angle Encoding), since the `binary_conversion` function requires inputs in $[0, 1]$. Each rescaled feature is then discretized into a $tau$-bit binary representation (parameter `tau_bit_feature`) via `binary_conversion`. This is the only encoding considered that has a "native" and non-geometric quantum hyperparameter: increasing $tau$ increases the resolution with which each feature is represented, at the cost of requiring $n times tau$ qubits, a number that grows rapidly as the required precision increases.
 
 == IQP Encoding
 
@@ -103,7 +103,7 @@ The Instantaneous Quantum Polynomial (IQP) Encoding employs a circuit with alter
 
 $ |phi(x)⟩ = U_("IQP")(x) H^(times.o n) |0⟩^(times.o n) $
 
-Features are rescaled with `MinMaxScaler` into the $[-1, 1]$ range to avoid excessive phase wrapping in two-qubit gates. The main quantum hyperparameters are:
+Features are rescaled with `MinMaxScaler` into the $[-0.95, 0.95]$ range, slightly narrower than $[-1, 1]$ for the same margin reasons discussed for Angle Encoding, to avoid excessive phase wrapping in two-qubit gates. The main quantum hyperparameters are:
 
 - `number_repeats`: how many times the encoding block is sequentially repeated, thereby increasing circuit depth;
 - `pattern`: the topology of the two-qubit interactions, such as a nearest-neighbor chain (`chain_pattern`) or all possible pairs (`all_to_all_pattern`, yielding $binom(n,2)$ interactions).
@@ -125,7 +125,7 @@ where $S(x)$ denotes the local encoding block, defined as the tensor product of 
 
 $ S(x) = times.o.big_(i=0)^(n-1) R_y (x_i) $
 
- $W$ represents the entanglement operator, typically implemented via a ring topology of CNOT gates between adjacent qubits:
+As in Angle Encoding, features are rescaled with `MinMaxScaler` into the $[0.05 pi, 0.95 pi]$ range before being used as rotation angles $x_i$. $W$ represents the entanglement operator, typically implemented via a ring topology of CNOT gates between adjacent qubits:
 
 $ W = product_(i=0)^(n-1) "CNOT"(i, (i + 1) mod n) $
 
@@ -209,7 +209,7 @@ The benchmark is conducted on six datasets, carefully chosen to cover various ge
 - *High_Dim_XOR*: Generalized XOR in `number_features` dimensions; the label is given by the sign of the product of all feature signs. This dataset rewards encodings capable of simultaneously capturing high-order correlations across all features, rather than just pairwise interactions.
 - *Breast_Cancer*: Real-world dataset from scikit-learn.
 
-For each dataset, the analysis is conducted across three experimental scales, denoted as `number_features / number_samples`: $4 / 200$, $8 / 200$, and $16 / 400$. Across all three, 20% of the data is reserved for the test set from the start (stratified), while the remaining 80% is used for the aforementioned 5-fold cross-validation. The performance comparison presented here is strictly between the five quantum encodings: the RBF baseline, introduced earlier as a conceptual reference and benchmark for the Geometric Coefficient, is excluded from this direct accuracy comparison.
+For each dataset, the analysis is conducted across three experimental scales, denoted as `number_features / number_samples`: `4/200`, `8/200`, and `16/400`. Across all three, 20% of the data is reserved for the test set from the start (stratified), while the remaining 80% is used for the aforementioned 5-fold cross-validation. The performance comparison presented here is strictly between the five quantum encodings: the RBF baseline, introduced earlier as a conceptual reference and benchmark for the Geometric Coefficient, is excluded from this direct accuracy comparison.
 
 == Methodological Note: Statistical Significance and an Apparent Artifact
 
@@ -217,18 +217,18 @@ Before detailing the results, two clarifications are necessary to avoid interpre
 
 First, due to computational limits, dataset sizes remained consistently small (200 or 400). This results in a test set of 40 (or 80) samples. Therefore, a 3-4 percentage point difference in F1 corresponds to a mere 1-2 differently classified samples. Such minor discrepancies cannot serve as the basis for solid conclusions, especially when comparing encodings with similar performance. Consequently, performance gaps of this magnitude are highlighted as indicative but are not treated as proof of one encoding's definitive superiority over another.
 
-*Secondly, the Circles, Moons, and Quantum_Ad_Hoc datasets yield identical results between $8 / 200$ and $4 / 200$.* At first glance, this might appear to be a pipeline error (e.g., a duplicated file or stale cache). It is not: these three datasets are inherently two-dimensional (only two "true" features, regardless of the input dimension requested), meaning the downstream PCA cannot extract more than 2 useful components in either case. Given the same random seed and sample size (200 in both configurations), the preprocessing, splitting, and subsequent phases yield bit-for-bit identical results. Therefore, comparing `8q/200` to `4q/200` for these three datasets is interpretively irrelevant, as the columns align by design. The three-scale comparison is only meaningful for Linear, High_Dim_XOR, and Breast_Cancer, where the number of features genuinely usable by PCA scales accordingly.
+*Secondly, the Circles, Moons, and Quantum_Ad_Hoc datasets yield identical results between `8/200` and `4/200`.* At first glance, this might appear to be a pipeline error (e.g., a duplicated file or stale cache). It is not: these three datasets are inherently two-dimensional (only two "true" features, regardless of the input dimension requested), meaning the downstream PCA cannot extract more than 2 useful components in either case. Given the same random seed and sample size (200 in both configurations), the preprocessing, splitting, and subsequent phases yield bit-for-bit identical results. Therefore, comparing `8/200` to `4/200` for these three datasets is interpretively irrelevant, as the columns align by design. The three-scale comparison is only meaningful for Linear, High_Dim_XOR, and Breast_Cancer, where the number of features genuinely usable by PCA scales accordingly.
 
 == Comparison Between Encodings, Dataset by Dataset
 
-The following tables report the F1-score (weighted) of the best configuration for each encoding, selected via cross-validation, at the three experimental scales (for Circles, Moons, and Quantum_Ad_Hoc, refer to the note above: columns $4 / 200$ and $8 / 200$ coincide).
+The following tables report the F1-score (weighted) of the best configuration for each encoding, selected via cross-validation, at the three experimental scales (for Circles, Moons, and Quantum_Ad_Hoc, refer to the note above: columns `4/200` and `8/200` coincide).
 The two images provided per dataset (at $8$ qubits / $200$ samples) display the confusion matrix and the Gram matrix (sorted by class) for both the best and worst encodings (evaluated on the test set, after optimal hyperparameters were chosen), allowing for a direct comparison of the underlying geometric structure.
 
 === Linear
 
 #table(
   columns: 4,
-  [*Encoding*], [*F1 (4q/200)*], [*F1 (8q/200)*], [*F1 (16q/400)*],
+  [*Encoding*], [*F1 (4/200)*], [*F1 (8/200)*], [*F1 (16/400)*],
   [Amplitude], [0.444], [0.500], [0.547],
   [Angle], [0.925], [0.900], [0.950],
   [Basis], [0.925], [0.693], [0.333],
@@ -236,14 +236,14 @@ The two images provided per dataset (at $8$ qubits / $200$ samples) display the 
   [Projected], [0.798], [0.744], [0.825],
 )
 
-On a problem that is linearly separable by design, any reasonable encoding is expected to perform well. This holds true for Angle and IQP at all scales, but crucially not for Amplitude, which remains stalled near random chance. The root cause is structural: Amplitude Encoding normalizes every sample, thereby discarding the absolute scale information of the vector—the exact information separating the classes in this setup. Furthermore, Basis Encoding deteriorates sharply as the scale increases ($0.925 arrow.r 0.333$): with higher bit-precision per feature (`tau_bit_feature`), the Hilbert space grows faster than the sample size (which remains unchanged from $4q$ to $8q$) can support.
+On a problem that is linearly separable by design, any reasonable encoding is expected to perform well. This holds true for Angle and IQP at all scales, but crucially not for Amplitude, which remains stalled near random chance. The root cause is structural: Amplitude Encoding normalizes every sample, thereby discarding the absolute scale information of the vector—the exact information separating the classes in this setup. Furthermore, Basis Encoding deteriorates sharply as the scale increases ($0.925 arrow.r 0.333$): with higher bit-precision per feature (`tau_bit_feature`), the Hilbert space grows faster than the sample size (which remains unchanged from `4/200` to `8/200`) can support.
 
 #figure(
-  image("img/grafici_modello_ottimo_Linear_angle.svg", width: 100%),
+  image("img/best_model_plots_Linear_angle.svg", width: 100%),
   caption: [Linear, 8 features/200 samples, Angle Encoding, Acc $=0.900$ (best).]
 )
 #figure(
-  image("img/grafici_modello_ottimo_Linear_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Linear_amplitude.svg", width: 100%),
   caption: [Linear, 8 features/200 samples, Amplitude Encoding, Acc $=0.500$ (worst, chance level).]
 )
 
@@ -251,7 +251,7 @@ On a problem that is linearly separable by design, any reasonable encoding is ex
 
 #table(
   columns: 4,
-  [*Encoding*], [*F1 (4q/200)*], [*F1 (8q/200)*], [*F1 (16q/400)*],
+  [*Encoding*], [*F1 (4/200)*], [*F1 (8/200)*], [*F1 (16/400)*],
   [Amplitude], [0.437], [0.437], [0.511],
   [Angle], [1.000], [1.000], [1.000],
   [Basis], [0.899], [0.899], [0.460],
@@ -262,11 +262,11 @@ On a problem that is linearly separable by design, any reasonable encoding is ex
 Circles is the dataset where the comparison is least informative: three out of five encodings achieve F1 $=1.000$ at just 4 qubits. Given a test set of only roughly 40 samples with simple radial geometry, this points to problem saturation rather than strict equivalence among Angle, IQP, and Projected. The previous structural observations regarding Amplitude and Basis still apply here.
 
 #figure(
-  image("img/grafici_modello_ottimo_Circles_angle.svg", width: 100%),
+  image("img/best_model_plots_Circles_angle.svg", width: 100%),
   caption: [Circles, 8 features/200 samples, Angle Encoding, Acc $=1.000$ (best).]
 )
 #figure(
-  image("img/grafici_modello_ottimo_Circles_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Circles_amplitude.svg", width: 100%),
   caption: [Circles, 8 features/200 samples, Amplitude Encoding, Acc $=0.450$ (worst).]
 )
 
@@ -276,7 +276,7 @@ The Gram matrix for Angle displays a clear block structure (one for each class),
 
 #table(
   columns: 4,
-  [*Encoding*], [*F1 (4q/200)*], [*F1 (8q/200)*], [*F1 (16q/400)*],
+  [*Encoding*], [*F1 (4/200)*], [*F1 (8/200)*], [*F1 (16/400)*],
   [Amplitude], [0.437], [0.437], [0.449],
   [Angle], [0.975], [0.975], [0.963],
   [Basis], [0.899], [0.899], [0.875],
@@ -287,11 +287,11 @@ The Gram matrix for Angle displays a clear block structure (one for each class),
 The pattern is similar to Circles but slightly less saturated: Amplitude remains the clear loser, while the other four encodings are highly competitive and functionally equivalent (differences fall within 1-2 percentage points, well within the statistical noise threshold discussed earlier).
 
 #figure(
-  image("img/grafici_modello_ottimo_Moons_angle.svg", width: 100%),
+  image("img/best_model_plots_Moons_angle.svg", width: 100%),
   caption: [Moons, 8 features/200 samples, Angle Encoding, Acc $=0.975$ (best, tied with IQP and Projected).]
 )
 #figure(
-  image("img/grafici_modello_ottimo_Moons_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Moons_amplitude.svg", width: 100%),
   caption: [Moons, 8 features/200 samples, Amplitude Encoding, Acc $=0.450$ (worst).]
 )
 
@@ -301,7 +301,7 @@ Here, the block structure for Angle is even more pronounced.
 
 #table(
   columns: 4,
-  [*Encoding*], [*F1 (4q/200)*], [*F1 (8q/200)*], [*F1 (16q/400)*],
+  [*Encoding*], [*F1 (4/200)*], [*F1 (8/200)*], [*F1 (16/400)*],
   [Amplitude], [0.400], [0.400], [0.499],
   [Angle], [0.617], [0.617], [0.725],
   [Basis], [0.572], [0.572], [0.536],
@@ -309,14 +309,14 @@ Here, the block structure for Angle is even more pronounced.
   [Projected], [0.850], [0.850], [0.975],
 )
 
-The dynamic shifts significantly here: no encoding achieves perfect separation at $4q$/$8q$, and Projected emerges as the clear winner across all scales, showing marked improvement when moving to $16q/400$ ($0.850 arrow.r 0.975$). Remarkably, although this dataset is explicitly designed to favor "rotational" encodings (Angle, IQP, Projected) via the $sin(x_1)cos(x_2)$ pattern, Projected leads by a wide margin, leaving Angle and IQP hovering around $0.6$-$0.7$.
+The dynamic shifts significantly here: no encoding achieves perfect separation at `4/200` or `8/200`, and Projected emerges as the clear winner across all scales, showing marked improvement when moving to `16/400` ($0.850 arrow.r 0.975$). Remarkably, although this dataset is explicitly designed to favor "rotational" encodings (Angle, IQP, Projected) via the $sin(x_1)cos(x_2)$ pattern, Projected leads by a wide margin, leaving Angle and IQP hovering around $0.6$-$0.7$.
 
 #figure(
-  image("img/grafici_modello_ottimo_Quantum_Ad_Hoc_projected.svg", width: 100%),
+  image("img/best_model_plots_Quantum_Ad_Hoc_projected.svg", width: 100%),
   caption: [Quantum_Ad_Hoc, 8 features/200 samples, Projected Quantum Kernel, Acc $=0.850$ (best).]
 )
 #figure(
-  image("img/grafici_modello_ottimo_Quantum_Ad_Hoc_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Quantum_Ad_Hoc_amplitude.svg", width: 100%),
   caption: [Quantum_Ad_Hoc, 8 features/200 samples, Amplitude Encoding, Acc $=0.400$ (worst).]
 )
 
@@ -324,7 +324,7 @@ The dynamic shifts significantly here: no encoding achieves perfect separation a
 
 #table(
   columns: 4,
-  [*Encoding*], [*F1 (4q/200)*], [*F1 (8q/200)*], [*F1 (16q/400)*],
+  [*Encoding*], [*F1 (4/200)*], [*F1 (8/200)*], [*F1 (16/400)*],
   [Amplitude], [0.624], [0.550], [0.474],
   [Angle], [0.600], [0.459], [0.362],
   [Basis], [0.617], [0.422], [0.347],
@@ -332,16 +332,16 @@ The dynamic shifts significantly here: no encoding achieves perfect separation a
   [Projected], [0.594], [0.421], [0.448],
 )
 
-It must be stated clearly before analyzing the numbers: practically no encoding functions effectively on High_Dim_XOR. The absolute best (Amplitude at $8q$) reaches only $F 1 = 0.550$, while the rest oscillate between $0.40$ and $0.65$. The gaps between "best" and "worst" are entirely subsumed by statistical noise. Declaring a "winner" here would be misleading; the following comparison should be read as a contrast between two different modes of failure, rather than success versus failure.
+It must be stated clearly before analyzing the numbers: practically no encoding functions effectively on High_Dim_XOR. The absolute best (Amplitude at `8/200`) reaches only $F 1 = 0.550$, while the rest oscillate between $0.40$ and $0.65$. The gaps between "best" and "worst" are entirely subsumed by statistical noise. Declaring a "winner" here would be misleading; the following comparison should be read as a contrast between two different modes of failure, rather than success versus failure.
 
 High_Dim_XOR is also the only dataset where performance degrades universally when scaling from 4 to 16 qubits. This aligns perfectly with the nature of the problem: generalized XOR requires capturing an $n$-order correlation (the sign of the product of all features), not merely pairwise relationships. As the feature count (and thus qubit count) increases, the space in which this correlation resides grows exponentially while the sample size remains comparatively small. This is the exact curse of dimensionality noted earlier regarding classical simulation, now observed from a learning perspective: even when simulation is tractable, the learning problem itself becomes overwhelmingly difficult. Not even IQP with an "all-to-all" pattern (which explicitly embeds pairwise correlations across all features) can compensate.
 
 #figure(
-  image("img/grafici_modello_ottimo_XOR_Alta_Dim_amplitude.svg", width: 100%),
+  image("img/best_model_plots_High_Dim_XOR_amplitude.svg", width: 100%),
   caption: [High_Dim_XOR, 8 features/200 samples, Amplitude Encoding, Acc $=0.550$ (the "best", but hovering near chance).]
 )
 #figure(
-  image("img/grafici_modello_ottimo_XOR_Alta_Dim_iqp.svg", width: 100%),
+  image("img/best_model_plots_High_Dim_XOR_iqp.svg", width: 100%),
   caption: [High_Dim_XOR, 8 features/200 samples, IQP Encoding ("all-to-all" pattern), Acc $=0.400$ (the worst).]
 )
 
@@ -351,7 +351,7 @@ Even the Gram matrix for the top performer (Amplitude) fails to reveal any recog
 
 #table(
   columns: 4,
-  [*Encoding*], [*F1 (4q/200)*], [*F1 (8q/200)*], [*F1 (16q/400)*],
+  [*Encoding*], [*F1 (4/200)*], [*F1 (8/200)*], [*F1 (16/400)*],
   [Amplitude], [0.567], [0.673], [0.794],
   [Angle], [0.949], [0.949], [0.937],
   [Basis], [0.732], [0.688], [0.488],
@@ -362,11 +362,11 @@ Even the Gram matrix for the top performer (Amplitude) fails to reveal any recog
 On the real-world dataset, IQP and Projected perform strongest across all scales. Angle performs well but sits slightly behind both. Notably, Amplitude is the sole encoding whose performance improves significantly and monotonically with scaling ($0.567 arrow.r 0.673 arrow.r 0.794$). This is logically consistent: with more features (and thus more qubits, since Amplitude scales logarithmically with feature count), the scalar information lost during normalization becomes proportionally less detrimental to the whole.
 
 #figure(
-  image("img/grafici_modello_ottimo_Breast_Cancer_projected.svg", width: 100%),
+  image("img/best_model_plots_Breast_Cancer_projected.svg", width: 100%),
   caption: [Breast_Cancer, 8 features/200 samples, Projected Quantum Kernel, Acc $=0.975$ (best).]
 )
 #figure(
-  image("img/grafici_modello_ottimo_Breast_Cancer_amplitude.svg", width: 100%),
+  image("img/best_model_plots_Breast_Cancer_amplitude.svg", width: 100%),
   caption: [Breast_Cancer, 8 features/200 samples, Amplitude Encoding, Acc $=0.675$ (worst).]
 )
 
@@ -390,6 +390,6 @@ Conversely, the Geometric Coefficient against the RBF baseline shows no useful c
 
 == The Winner?
 
-Among the five encodings, the *Projected Quantum Kernel* is undeniably the most consistent: it ties or outright holds the highest F1-score across 4 of the 6 datasets at $8q/200$ (Moons, Quantum_Ad_Hoc, Breast_Cancer, and the saturated Circles at $1.000$). This dominance largely persists across $4q/200$ and $16q/400$. Angle and IQP remain highly competitive everywhere except on Quantum_Ad_Hoc, where Projected takes a commanding lead. On High_Dim_XOR, as previously noted, there is no true winner, merely a "least bad" option.
+Among the five encodings, the *Projected Quantum Kernel* is undeniably the most consistent: it ties or outright holds the highest F1-score across 4 of the 6 datasets at `8/200` (Moons, Quantum_Ad_Hoc, Breast_Cancer, and the saturated Circles at $1.000$). This dominance largely persists across `4/200` and `16/400`. Angle and IQP remain highly competitive everywhere except on Quantum_Ad_Hoc, where Projected takes a commanding lead. On High_Dim_XOR, as previously noted, there is no true winner, merely a "least bad" option.
 
 An essential computational cost factor, entirely absent from the pure F1 metric, must also be considered: aggregating kernel calculation times across all cross-validation combinations reveals IQP to be drastically more expensive (averaging roughly 55 times longer per combination than Projected), despite never decisively outperforming it in accuracy. At parity of predictive capability, Projected yields comparable or superior results at a fraction of the computational overhead.
