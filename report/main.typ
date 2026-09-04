@@ -66,7 +66,7 @@ The goal of this project is not to demonstrate a strict quantum advantage, but r
 
 To ensure a fair comparison, a brief model selection of the downstream classical SVM (a grid search on the regularization parameter $C$) is performed for each encoding and its respective quantum hyperparameter combinations, thereby isolating the encoding's contribution from the mere SVM optimization.
 
-The main script, `main.py`, contains the `qsvm` function that orchestrates the model construction by relying on several auxiliary modules. Among these, the various `kernel_<encoding_name>.py` files allow for the seamless integration of different data embeddings, making the architecture highly versatile. The entire workflow is managed by the main notebook `QSVM_Encoding_Benchmark.ipynb`, which acts as a control panel to easily configure experiments and select datasets.
+The main script, `main.py`, contains the `qsvm` function that orchestrates the model construction by relying on several auxiliary modules. Among these, the various `kernel_<encoding_name>.py` files allow for the seamless integration of different data embeddings, making the architecture highly versatile. The entire workflow is managed by the main notebook `encoding_benchmark.ipynb`, which acts as a control panel to easily configure experiments and select datasets.
 
 // ------------------------------------------------------------
 = Evaluated Encodings
@@ -154,11 +154,11 @@ where $⟨ dot, dot ⟩_F$ denotes the Frobenius inner product. A KTA value clos
 
 == Geometric Coefficient
 
-The geometric coefficient extends the same principle as the KTA, but rather than comparing the kernel with the ideal target $y y^top$, it compares two Gram matrices with each other — typically the quantum kernel $K_Q$ and the reference classical kernel $K_"RBF"$:
+The geometric coefficient is the geometric difference of Huang et al. (2021, "Power of data in quantum machine learning"), which compares two Gram matrices not through a direct similarity, but by asking whether the classical kernel's structure could be captured within the quantum kernel's induced function space. Given the reference classical kernel $K_"RBF"$ and the quantum kernel $K_Q$ (regularized as $K_Q + lambda I$ with $lambda = 10^(-6)$ for numerical stability):
 
-$ "GC"(K_Q, K_"RBF") = (⟨ K_Q, K_"RBF" ⟩_F) / (||K_Q||_F space ||K_"RBF"||_F) $
+$ "GC"(K_"RBF", K_Q) = sqrt(lambda_"max" (sqrt(K_"RBF") thin K_Q^(-1) thin sqrt(K_"RBF"))) $
 
-This metric does not measure kernel quality per se, but rather its structural similarity to an established classical kernel. A low geometric coefficient suggests that the quantum encoding captures data relationships that are fundamentally different from those accessible to a "standard" classical kernel, thus highlighting a potential added value of the quantum channel. Conversely, a high value implies that the quantum kernel behaves almost equivalently to the classical one.
+where $lambda_"max"$ denotes the largest eigenvalue (the matrices involved are symmetric, so this coincides with the spectral norm) and $sqrt(K_"RBF")$ is the matrix square root of $K_"RBF"$. Unlike the KTA, this metric does not measure kernel quality per se, but rather how structurally different the quantum kernel is from an established classical kernel. A low geometric coefficient means the classical kernel is already well-represented within the quantum kernel's function space — no separation is possible, so the quantum encoding is unlikely to offer any advantage over the classical baseline. A high value instead means the two kernels induce genuinely different geometries, which is a *necessary* (but not sufficient) condition for a potential quantum advantage.
 
 == F1-score
 
