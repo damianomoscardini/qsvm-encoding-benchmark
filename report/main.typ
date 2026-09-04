@@ -35,6 +35,15 @@
   #v(1fr)
   #line(length: 50%) \
   July 2026
+
+  #v(1.5cm)
+  #link("https://creativecommons.org/licenses/by-sa/4.0/")[
+    #image("img/cc-by-sa.svg", width: 1.4cm)
+  ]
+  #v(0.2em)
+  #text(size: 8pt)[
+    This report is licensed under a #link("https://creativecommons.org/licenses/by-sa/4.0/")[CC BY-SA 4.0] license.
+  ]
 ]))
 
 #pagebreak()
@@ -70,7 +79,7 @@ In Amplitude Encoding, the feature vector is directly encoded into the amplitude
 
 $ |phi(x)⟩ = sum_(i=1)^(2^n) x_i / (||x||_2) |i ⟩ $
 
-To represent a valid amplitude distribution, the vector must have a unit norm: in the pipeline, this is achieved using scikit-learn's `normalize(norm="l2")` applied to each sample. The major theoretical advantage of this encoding is its qubit efficiency: with $n$ qubits, up to $2^n$ real components can be encoded, making it the most "compact" among the considered encodings. 
+To represent a valid amplitude distribution, the vector must have a unit norm: in the pipeline, this is achieved natively by `qml.AmplitudeEmbedding`, via its `normalize=True` argument. The major theoretical advantage of this encoding is its qubit efficiency: with $n$ qubits, up to $2^n$ real components can be encoded, making it the most "compact" among the considered encodings. 
 
 == Angle Encoding
 

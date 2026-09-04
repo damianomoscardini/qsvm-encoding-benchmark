@@ -148,8 +148,8 @@ A dataset is just a dict:
 ```python
 dataset = {
     "dataset_name": "some_name",                # used in filenames/folders/plot titles
-    "dataset_original_data": (X, y),             # X: ndarray (n_samples, n_features)
-                                                  # y: ndarray of exactly two classes, labeled 0/1
+    "dataset_original_data": (X, y),            # X: ndarray (n_samples, n_features)
+                                                # y: ndarray of exactly two classes, labeled 0/1
 }
 ```
 
